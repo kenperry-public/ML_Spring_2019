@@ -1,0 +1,75 @@
+# Standard imports
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Common imports
+import os
+
+# Sklearn imports
+
+TITANIC_PATH = os.path.join("./external/jack-dies", "data")
+
+train_data = pd.read_csv( os.path.join(TITANIC_PATH, "train.csv") )
+test_data  = pd.read_csv( os.path.join(TITANIC_PATH, "test.csv")  )
+
+# Numeric pipeline
+from sklearn.base import BaseEstimator, TransformerMixin
+
+# A class to select numerical or categorical columns 
+# since Scikit-Learn doesn't handle DataFrames yet
+class DataFrameSelector(BaseEstimator, TransformerMixin):
+    def __init__(self, attribute_names):
+        self.attribute_names = attribute_names
+    def fit(self, X, y=None):
+        return self
+    def transform(self, X):
+        return X[self.attribute_names]
+
+from sklearn.pipeline import Pipeline
+try:
+    from sklearn.impute import SimpleImputer # Scikit-Learn 0.20+
+except ImportError:
+    from sklearn.preprocessing import Imputer as SimpleImputer
+
+num_pipeline = Pipeline([
+        ("select_numeric", DataFrameSelector(["Age", "SibSp", "Parch", "Fare"])),
+        ("imputer", SimpleImputer(strategy="median")),
+    ])
+
+# Categorical pipeline
+# Inspired from stackoverflow.com/questions/25239958
+class MostFrequentImputer(BaseEstimator, TransformerMixin):
+    def fit(self, X, y=None):
+        self.most_frequent_ = pd.Series([X[c].value_counts().index[0] for c in X],
+                                        index=X.columns)
+        return self
+    def transform(self, X, y=None):
+        return X.fillna(self.most_frequent_)
+
+class SexToInt(BaseEstimator, TransformerMixin):
+    def fit(self, X, y=None):
+        return self
+    
+    def transform(self, X, y=None):
+        sex = X["Sex"]
+        X["Sex"] = 0
+        X[ sex == "female" ] = 1
+        
+        return(X)
+
+cat_pipeline = Pipeline([
+        ("select_cat", DataFrameSelector( ["Pclass", "Age", "Sex", "Fare", "SibSp", "Parch" ])),
+        ("imputer", MostFrequentImputer()),
+        ("sex_encoder", SexToInt() ),
+    ])
+
+# Union the numberic and categorical pipelines
+from sklearn.pipeline import FeatureUnion
+preprocess_pipeline = FeatureUnion(transformer_list=[
+        ("num_pipeline", num_pipeline),
+        ("cat_pipeline", cat_pipeline),
+    ])
+
+# Extract the training target
+y_train = train_data["Survived"]
