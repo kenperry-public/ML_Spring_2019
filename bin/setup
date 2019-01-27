@@ -49,7 +49,7 @@ mkdir Notebooks
 cd Notebooks
 
 # Clone git repositories
-git clone https://github.com/kenperry-public/NYU.git
+git clone https://github.com/kenperry-public/ML_Spring_2019.git
 git clone https://github.com/jakevdp/PythonDataScienceHandbook.git
 git clone https://github.com/ageron/handson-ml.git
 
