@@ -33,7 +33,7 @@ jupyter nbextension enable collapsible_headings/main
 jupyter nbextension enable livemdpreview/livemdpreview
 
 # Extension for slides
-conda install -c conda-forge rise
+conda install -y -c conda-forge rise
 jupyter nbextension enable rise
 
 # Create a notebook password
@@ -74,7 +74,7 @@ sudo apt install -y firefox
 cd ~
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo dpkg -i google-chrome-stable_current_amd64.deb
-sudo apt --fix-broken install
+sudo apt --fix-broken install -y
 
 # Disable root login
 sudo passwd -l root
@@ -88,7 +88,7 @@ vncpasswd
 
 # Start running the tools we need
 
-nohup vncserver  -geometry 1280x1024 :1
+nohup vncserver  -geometry 1280x1024 :1 > ~/vncserver_cmd.log
 
 # Start jupyter
 source ~/.bashrc
