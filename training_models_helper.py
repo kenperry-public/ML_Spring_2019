@@ -470,4 +470,4 @@ class TransformHelper():
 
         # Drop the first/last points b/c they are infinite
         _ = axes[1].hist( np.log(odds)[1:-1], bins=30 )
-        _ = axes[1].set_title("Log odds ratio")
+        _ = axes[1].set_title("Log odds")

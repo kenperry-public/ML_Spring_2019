@@ -30,7 +30,7 @@ def fetch_mnist_784():
         X, y = fetch_openml('mnist_784', version=1, return_X_y=True)
 
         # Cache it !
-        os.makedirs(cache_dr, exist_ok=True)
+        os.makedirs(cache_dir, exist_ok=True)
         np.save(X_file, X)
         np.save(y_file, y)
         
